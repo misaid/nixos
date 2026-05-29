@@ -15,7 +15,7 @@
     ./hardware-configuration.nix
     inputs.home-manager.nixosModules.default
     ./modules/zsh.nix
-    ./modules/nvf-configuration.nix
+    # ./modules/nvf-configuration.nix
   ];
   # Bootloader.
   boot.loader.grub.enable = true;

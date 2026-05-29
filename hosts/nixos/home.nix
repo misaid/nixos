@@ -12,10 +12,19 @@
   # --------------------------------------------------
   home.packages = with pkgs; [
     cbonsai
-    ripgrep
-    fd
+      neovim
+  git
+  ripgrep
+  fd
+  gcc
+  nodejs
+  lazygit
   ];
 
+home.file.".config/nvim" = {
+  source = ./modules/nvim;
+  recursive = true;
+};
   # --------------------------------------------------
   # Let Home Manager manage itself
   # --------------------------------------------------
