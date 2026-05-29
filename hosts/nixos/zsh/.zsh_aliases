@@ -1,0 +1,24 @@
+# alias rain="~/Downloads/ascii-rain/rain" 
+alias fzc="fzf | wl-copy"
+alias sdn="shutdown now"
+alias open="xdg-open"
+alias clock="tty-clock -c -s -t -C 4"
+alias c="clear"
+alias show='kitty +kitten icat'
+alias srn='sudo reboot now'
+alias vi='nvim'
+alias sz='source ~/.zshrc'
+alias fu='flatpak upgrade'
+alias fix_bluetooth=" ~/Scripts/fix_bt_1.sh"
+alias setdarkmode='while [ 1 -eq 1 ]; do echo "Press 1 for light theme, 2 for dark theme and hit enter"; read userInput; userInput=$(echo "$userInput" | xargs); if [ "$userInput" -eq "1" ]; then theme="Adwaita"; elif [ "$userInput" -eq "2" ]; then theme="Adwaita-dark"; else clear; echo "Invalid input, try again"; continue; fi; sudo flatpak override --env=GTK_THEME=$theme; sudo flatpak override --env=QT_STYLE_OVERRIDE=$theme; clear; echo "Operation Complete"; done;'
+alias pacsearch="pacman -Q | grep"
+alias flatsearch="flatpak list | grep"
+alias asearch="alias | grep"
+alias ocon="~/Scripts/ocon.zsh"
+alias editalias="nvim ~/.zsh_aliases"
+alias editz="nvim ~/.zshrc"
+alias leet="nvim leetcode.nvim"
+# alias fastfetch="fastfetch -c ~/.config/fastfetch/presets/examples/25.jsonc"
+alias ncspot="flatpak run io.github.hrkfdn.ncspot/x86_64/stable"
+alias srtw="~/Scripts/reboot-to-windows.zsh"
+alias cherish="~/Projects/learnrust/cherish/target/debug/cherish"
