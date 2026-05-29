@@ -2,15 +2,21 @@
 # your system.  Help is available in the configuration.nix(5) man page
 # and in the NixOS manual (accessible by running ‘nixos-help’).
 
-{ config, pkgs, inputs, ... }:
+{
+  config,
+  pkgs,
+  inputs,
+  ...
+}:
 
 {
-  imports =
-    [ # Include the results of the hardware scan.
-      ./hardware-configuration.nix
-      inputs.home-manager.nixosModules.default
-      ./modules/zsh.nix
-    ];
+  imports = [
+    # Include the results of the hardware scan.
+    ./hardware-configuration.nix
+    inputs.home-manager.nixosModules.default
+    ./modules/zsh.nix
+    ./modules/nvf-configuration.nix
+  ];
   # Bootloader.
   boot.loader.grub.enable = true;
   boot.loader.grub.device = "/dev/sda";
@@ -18,7 +24,10 @@
 
   networking.hostName = "nixos"; # Define your hostname.
   # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
-  nix.settings.experimental-features = ["nix-command" "flakes"];
+  nix.settings.experimental-features = [
+    "nix-command"
+    "flakes"
+  ];
 
   # Configure network proxy if necessary
   # networking.proxy.default = "http://user:password@proxy:port/";
@@ -76,24 +85,27 @@
     isNormalUser = true;
     description = "a";
     shell = pkgs.zsh;
-    extraGroups = [ "networkmanager" "wheel" ];
+    extraGroups = [
+      "networkmanager"
+      "wheel"
+    ];
     packages = with pkgs; [
-	vim
-	neovim
-	firefox
-    #  thunderbird
+      vim
+      # neovim
+      firefox
+      #  thunderbird
     ];
   };
 
-home-manager = {
-	extraSpecialArgs = { inherit inputs; };
-	useGlobalPkgs = true;
-        useUserPackages = true;
+  home-manager = {
+    extraSpecialArgs = { inherit inputs; };
+    useGlobalPkgs = true;
+    useUserPackages = true;
 
-	users = {
-		"a" = import ./home.nix;
-	};
-};
+    users = {
+      "a" = import ./home.nix;
+    };
+  };
 
   # Install firefox.
   programs.firefox.enable = true;
@@ -101,23 +113,23 @@ home-manager = {
   # Enable Oh-my-zsh
   users.defaultUserShell = pkgs.zsh;
   # system.userActivationScripts.zshrc = "touch .zshrc"; # to avoid being prompted to generate the config for first time
-  environment.shells = [pkgs.zsh]; # https://wiki.nixos.org/wiki/Zsh#GDM_does_not_show_user_when_zsh_is_the_default_shell
+  environment.shells = [ pkgs.zsh ]; # https://wiki.nixos.org/wiki/Zsh#GDM_does_not_show_user_when_zsh_is_the_default_shell
   environment.loginShellInit = ''
     # equivalent to .profile
     # https://search.nixos.org/options?show=environment.loginShellInit
   '';
 
   programs.hyprland = {
-	  enable = true;
-	  xwayland.enable = true;
+    enable = true;
+    xwayland.enable = true;
   };
   environment.sessionVariables = {
-	  WLR_NO_HARDWARE_CURSORS = "1";
-	  NIXOS_OZONE_WL = "1";
+    WLR_NO_HARDWARE_CURSORS = "1";
+    NIXOS_OZONE_WL = "1";
   };
 
   hardware = {
-	  opengl.enable = true;
+    opengl.enable = true;
   };
 
   # Allow unfree packages
@@ -126,30 +138,30 @@ home-manager = {
   # List packages installed in system profile. To search, run:
   # $ nix search wget
   environment.systemPackages = with pkgs; [
-     git
-     stow
-     vim
-     wget
-     kitty
-     sl
-     gnome-tweaks
-     uwsm
-     zsh-powerlevel10k
-     meslo-lgs-nf
-     tmuxPlugins.vim-tmux-navigator
-     tmuxPlugins.resurrect
-     tmuxPlugins.continuum
-     foot
-     gcc
-     fzf
-     python3
-     pipenv
-     tmux
-     zoxide
+    git
+    stow
+    vim
+    wget
+    kitty
+    sl
+    gnome-tweaks
+    uwsm
+    zsh-powerlevel10k
+    meslo-lgs-nf
+    tmuxPlugins.vim-tmux-navigator
+    tmuxPlugins.resurrect
+    tmuxPlugins.continuum
+    foot
+    gcc
+    fzf
+    python3
+    pipenv
+    tmux
+    zoxide
+    tree-sitter
   ];
 
-
-    programs.nvf = {
+  programs.nvf = {
     enable = true;
     # Your settings need to go into the settings attribute set
     # most settings are documented in the appendix
