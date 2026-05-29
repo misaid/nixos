@@ -60,12 +60,12 @@
         utility.motion.hop.enable = true; # Quick navigation
         utility.surround.enable = true;
         ## Plugins to preload (startPlugins)
-        startPlugins = [
-          "gitsigns-nvim"
-          "nvim-tree-lua"
-          "which-key-nvim"
-          "telescope"
-        ];
+        # startPlugins = [
+        #   "gitsigns-nvim"
+        #   "nvim-tree-lua"
+        #   "which-key-nvim"
+        #   "telescope"
+        # ];
 
         ## Extra plugins with custom setup
       };

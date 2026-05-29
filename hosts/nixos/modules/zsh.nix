@@ -1,30 +1,27 @@
-
 { config, pkgs, ... }:
 
 {
   programs.zsh = {
     enable = true;
-    
 
     autosuggestions.enable = true;
     syntaxHighlighting.enable = true;
 
-    oh-my-zsh ={
-    enable = true;
+    ohMyZsh = {
+      enable = true;
 
-    plugins = [
-      "git"
-      "sudo"
-      "tmux"
-      "docker"
-      "pipenv"
-      "python"
-      "archlinux"
-      "dotnet"
-      "zoxide"
-    ];
-  };
-
+      plugins = [
+        "git"
+        "sudo"
+        "tmux"
+        "docker"
+        "pipenv"
+        "python"
+        "archlinux"
+        "dotnet"
+        "zoxide"
+      ];
+    };
 
     shellAliases = {
       fzc = "fzf | wl-copy";
@@ -70,8 +67,7 @@
     '';
   };
 
-environment.etc."powerlevel10k/p10k.zsh".source =
-  ../p10k/.p10k.zsh;
+  environment.etc."powerlevel10k/p10k.zsh".source = ../p10k/.p10k.zsh;
   environment.systemPackages = with pkgs; [
     zsh
     zsh-powerlevel10k
