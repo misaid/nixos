@@ -21,6 +21,7 @@
       "python"
       "archlinux"
       "dotnet"
+      "zoxide"
     ];
   };
 

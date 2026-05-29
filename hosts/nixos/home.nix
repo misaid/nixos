@@ -30,7 +30,9 @@
       pkgs.vimPlugins.nvim-treesitter
     ];
   };
-
+ # home.file.".config/nvim/init.lua".text = ''
+ #    require("config.lazy")
+ #  '';
   # --------------------------------------------------
   # Zsh (clean + Nix-safe Powerlevel10k)
   # --------------------------------------------------
