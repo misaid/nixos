@@ -148,27 +148,20 @@ home-manager = {
      zoxide
   ];
 
-#   ## Enable omz
-#   programs.zsh = {
-#     enable = true;
-#
-#     ohMyZsh = {
-#       enable = true;
-#     };
-#
-#     autosuggestions.enable = true;
-#     syntaxHighlighting.enable = true;
-#
-#     promptInit = ''
-#       source ${pkgs.zsh-powerlevel10k}/share/zsh-powerlevel10k/powerlevel10k.zsh-theme
-#
-#       # Use system p10k config
-#       source /etc/powerlevel10k/p10k.zsh
-#     '';
-#   };
-#
-# environment.etc."powerlevel10k/p10k.zsh".source =
-#   ./p10k/.p10k.zsh;
+
+    programs.nvf = {
+    enable = true;
+    # Your settings need to go into the settings attribute set
+    # most settings are documented in the appendix
+    settings = {
+      vim.viAlias = false;
+      vim.vimAlias = true;
+      vim.lsp = {
+        enable = true;
+      };
+    };
+  };
+
   # Some programs need SUID wrappers, can be configured further or are
   # started in user sessions.
   # programs.mtr.enable = true;

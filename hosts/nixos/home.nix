@@ -24,12 +24,13 @@
   # --------------------------------------------------
   # Neovim (fully reproducible Tree-sitter)
   # --------------------------------------------------
-  programs.neovim = {
-    enable = true;
-    plugins = [
-      pkgs.vimPlugins.nvim-treesitter
-    ];
-  };
+  # programs.neovim = {
+  #   enable = true;
+  #   plugins = [
+  #     pkgs.vimPlugins.nvim-treesitter
+  #   ];
+  # };
+
  # home.file.".config/nvim/init.lua".text = ''
  #    require("config.lazy")
  #  '';

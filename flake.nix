@@ -1,5 +1,5 @@
 {
-  description = "Multi-host NixOS flake";
+  description = "Multi-host NixOS flake with nvf";
 
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
@@ -8,37 +8,40 @@
       url = "github:nix-community/home-manager";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    nvf.url = "github:notashelf/nvf";
   };
 
   outputs = { self, nixpkgs, ... }@inputs:
-    let
-      system = "x86_64-linux";
-    in
-    {
-      nixosConfigurations = {
+  let
+    system = "x86_64-linux";
 
-        nixos = nixpkgs.lib.nixosSystem {
-          inherit system;
+    commonModules = [
+      inputs.home-manager.nixosModules.default
+      inputs.nvf.nixosModules.default
+    ];
+  in
+  {
+    nixosConfigurations = {
+      nixos = nixpkgs.lib.nixosSystem {
+        inherit system;
 
-          specialArgs = { inherit inputs system; };
+        specialArgs = { inherit inputs system; };
 
-          modules = [
-            ./hosts/nixos/configuration.nix
-            inputs.home-manager.nixosModules.default
-          ];
-        };
+        modules = commonModules ++ [
+          ./hosts/nixos/configuration.nix
+        ];
+      };
 
-        work = nixpkgs.lib.nixosSystem {
-          inherit system;
+      work = nixpkgs.lib.nixosSystem {
+        inherit system;
 
-          specialArgs = { inherit inputs system; };
+        specialArgs = { inherit inputs system; };
 
-          modules = [
-            ./hosts/work/configuration.nix
-            inputs.home-manager.nixosModules.default
-          ];
-        };
-
+        modules = commonModules ++ [
+          ./hosts/work/configuration.nix
+        ];
       };
     };
+  };
 }
