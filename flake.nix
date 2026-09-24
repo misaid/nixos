@@ -21,8 +21,8 @@
     # The directory must contain configuration.nix (plus home.nix and a
     # locally generated hardware-configuration.nix, which is gitignored).
     hosts = {
+      vmware = "x86_64-linux";
       nixos = "x86_64-linux";
-      work = "x86_64-linux";
     };
 
     systems = nixpkgs.lib.unique (builtins.attrValues hosts);

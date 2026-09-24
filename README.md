@@ -37,7 +37,7 @@ sudo nixos-generate-config --show-hardware-config \
 #    entry (vfat ESP). If not, reinstall with UEFI enabled.
 
 # 5. Build and switch. <name> matches a hosts/<name>/ directory
-#    (today: nixos for the VMware VM, work for the physical box).
+#    (today: vmware for the VMware VM, nixos for the physical box).
 sudo nixos-rebuild switch --flake /etc/nixos#<name>
 
 # 6. Set the login password (user a has none until you do).
