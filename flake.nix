@@ -25,11 +25,11 @@
     hosts = {
       vmware = {
         system = "x86_64-linux";
-        username = "a";
+        username = "nixmo";
       };
       nixos = {
         system = "x86_64-linux";
-        username = "a";
+        username = "nixmo";
       };
     };
 

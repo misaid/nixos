@@ -59,7 +59,7 @@ nix-shell -p git --run 'sudo env PATH="$PATH" git -C /etc/nixos add -f hosts/<na
 nix-shell -p git --run "sudo nixos-rebuild switch --flake /etc/nixos#<name>"
 
 # 7. Set the login password (the flake-table user has none until you do).
-sudo passwd a   # replace a with your hosts-table username
+sudo passwd nixmo   # replace nixmo with your hosts-table username
 ```
 
 ## Everyday use (run from /etc/nixos)

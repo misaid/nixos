@@ -3,13 +3,13 @@
 #   sudo curl -o /tmp/install.sh https://raw.githubusercontent.com/misaid/nixos/systemd-boot/install.sh
 #   sudo bash /tmp/install.sh <hostname> [username]
 # <hostname> must match a hosts/<hostname>/ directory (today: vmware, nixos);
-# [username] must match its hosts-table username (default: a).
+# [username] must match its hosts-table username (default: nixmo).
 # NOTE: the branch in the URL above must match the branch this file is on.
 set -euo pipefail
 
 HOST="${1:?usage: install.sh <hostname> [username]  (e.g. install.sh vmware)}"
 # Must match the username in the flake's hosts table for this host.
-USERNAME="${2:-a}"
+USERNAME="${2:-nixmo}"
 REPO="https://github.com/misaid/nixos"
 BRANCH="systemd-boot"
 DEST="/etc/nixos"
