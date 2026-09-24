@@ -14,8 +14,8 @@ REPO="https://github.com/misaid/nixos"
 BRANCH="systemd-boot"
 DEST="/etc/nixos"
 DOTFILES_REPO="https://github.com/misaid/dotfiles"
-# Everything except nvim, zsh and avante.nvim (owned by the flake).
-STOW_PKGS="alacritty btop caelestia cava fastfetch ghostty hypr hyprpanel jrnl kitty lazygit mpv neofetch qBittorrent spicetify tmux vlc wallpapers zathura zed"
+# Everything except nvim, zsh, avante.nvim and spicetify (owned by the flake).
+STOW_PKGS="alacritty btop caelestia cava fastfetch ghostty hypr hyprpanel jrnl kitty lazygit mpv neofetch qBittorrent tmux vlc wallpapers zathura zed"
 
 if [ "$EUID" -ne 0 ]; then exec sudo bash "$0" "$@"; fi
 
@@ -60,9 +60,10 @@ nix-shell -p git --run "git -C $DEST add -f hosts/$HOST/hardware-configuration.n
 # 7. Build and switch (still wrapped: git lands on the system only now).
 nix-shell -p git --run "nixos-rebuild switch --flake $DEST#$HOST"
 
-# 8. Dotfiles (stow, as the user — never as root). The flake owns nvim, zsh
-#    and avante.nvim, so those stay unstowed; everything else in the repo is
-#    fair game. Binaries backing these configs live in home.packages.
+# 8. Dotfiles (stow, as the user — never as root). The flake owns nvim, zsh,
+#    avante.nvim and spicetify, so those stay unstowed; everything else in
+#    the repo is fair game. Binaries backing these configs live in
+#    home.packages.
 USER_HOME="/home/$USERNAME"
 if [ ! -d "$USER_HOME/dotfiles/.git" ]; then
   sudo -u "$USERNAME" git clone "$DOTFILES_REPO" "$USER_HOME/dotfiles"

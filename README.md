@@ -102,9 +102,9 @@ sudo nixos-rebuild switch --rollback
 ## Dotfiles (stow sister repo)
 
 `install.sh` step 8 clones `github.com/misaid/dotfiles` to `~/dotfiles`
-and stows everything **except** `nvim`, `zsh` and `avante.nvim` — those
-are owned by this flake (nvf / the omz module) and stowing them would
-fight it. The binaries backing the stowed configs live in
+and stows everything **except** `nvim`, `zsh`, `avante.nvim` and
+`spicetify` — those are owned by this flake (nvf / the omz module /
+spicetify-nix) and stowing them would fight it. The binaries backing the stowed configs live in
 `home.packages` on both hosts.
 
 Notes:
@@ -119,7 +119,16 @@ Notes:
   flake input wired up (see the web-dev section's pointer).
 - Re-stow after pulling dotfile updates:
   `cd ~/dotfiles && stow -t ~ <package>`.
-  Never stow `nvim`, `zsh` or `avante.nvim`.
+  Never stow `nvim`, `zsh`, `avante.nvim` or `spicetify`.
+
+## Spotify (spicetify)
+
+Themed declaratively via the `spicetify-nix` flake input, configured in
+`hosts/common/spicetify.nix` (shared by all hosts): `tokyonight` theme
+plus the `shuffle`, `hidePodcasts` and `beautifulLyrics` extensions.
+Never install `pkgs.spotify` yourself — the module builds its own
+wrapped copy. Add extensions/themes by name in that file; the in-app
+marketplace is browse-only under this setup.
 
 ## Add a new machine
 
