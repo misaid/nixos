@@ -24,13 +24,6 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    # Pinned theme SOURCE (not a flake): stock SilentSDDM v1.3.4 QML.
-    # Your custom lana.conf + lana.mp4/png are overlaid in
-    # hosts/common/silent-lana.nix. flake=false so no hashes needed.
-    silentSDDM = {
-      url = "github:uiriansan/SilentSDDM/v1.3.4";
-      flake = false;
-    };
   };
 
   outputs = { self, nixpkgs, ... }@inputs:

@@ -6,7 +6,6 @@
 {
   imports = [
     ./nvf-configuration.nix
-    ./silent-lana.nix
     ./zsh.nix
   ];
 
@@ -45,8 +44,9 @@
     variant = "";
   };
 
-  # Login manager (custom SilentSDDM "lana" theme, see ./silent-lana.nix)
-  # + GNOME. SDDM only picks the session; GNOME owns screen locking.
+  # Login manager (stock SDDM) + GNOME.
+  services.displayManager.sddm.enable = true;
+  services.displayManager.sddm.wayland.enable = true;
   services.desktopManager.gnome.enable = true;
 
   # Enable CUPS to print documents.
