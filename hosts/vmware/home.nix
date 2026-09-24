@@ -1,7 +1,7 @@
 { config, pkgs, username, ... }:
 
 {
-  imports = [ ../../common/spicetify.nix ];
+  imports = [ ../common/spicetify.nix ];
 
   home.username = username;
   home.homeDirectory = "/home/${username}";
