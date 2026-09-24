@@ -107,7 +107,9 @@
           nvim-docs-view.enable = true;
         };
 
-        mini.tabline.enable = true;
+        mini.tabline.enable = false; # replaced by bufferline below (was LazyVim default)
+
+        tabline.nvimBufferline.enable = true; # was bufferline.nvim (LazyVim default)
 
         filetree.nvimTree = {
           enable = true;
@@ -252,7 +254,11 @@
         comments.comment-nvim.enable = true;
         git.gitsigns.enable = true;
         utility.motion.hop.enable = true;
+        utility.motion.flash-nvim.enable = true; # was flash.nvim (LazyVim defaults s/S/r/R)
         utility.surround.enable = true;
+        utility.grug-far-nvim.enable = true; # was grug-far.nvim (<leader>sr)
+        utility.yanky-nvim.enable = true; # was yanky.nvim ([y/]y ring cycling)
+        utility.leetcode-nvim.enable = true; # was lua/plugins/leet.lua (defaults)
 
         # Avante (was lua/plugins/avante.lua, provider claude).
         assistant.avante-nvim = {
@@ -273,6 +279,12 @@
           };
         };
 
+        # Supermaven (was supermaven-nvim, loaded as completion source).
+        # Needs auth on first run (:SupermavenUseFree or API key). NOTE: its
+        # default accept key is <Tab>, which fights supertab below — change
+        # setupOpts.keymaps if you use inline suggestions.
+        assistant.supermaven-nvim.enable = true;
+
         # Plugins with no nvf module (were lua/plugins/*).
         # If a rebuild complains about a missing pkgs.vimPlugins attribute,
         # delete that entry here.
@@ -289,10 +301,6 @@
             package = pkgs.vimPlugins.vim-be-good;
             setup = "";
           };
-          leetcode = {
-            package = pkgs.vimPlugins.leetcode-nvim;
-            setup = "require('leetcode').setup()";
-          };
           img-clip = {
             package = pkgs.vimPlugins.img-clip-nvim;
             setup = ''
@@ -305,6 +313,50 @@
                 },
               })
             '';
+          };
+          notify = {
+            # backend for noice.nvim popups
+            package = pkgs.vimPlugins.nvim-notify;
+            setup = "require('notify').setup({ stages = 'static' })";
+          };
+          noice = {
+            # was noice.nvim (LazyVim default UI for cmdline/messages/LSP docs)
+            package = pkgs.vimPlugins.noice-nvim;
+            setup = ''
+              require('noice').setup({
+                lsp = {
+                  override = {
+                    ['vim.lsp.util.convert_input_to_markdown_lines'] = true,
+                    ['vim.lsp.util.stylize_markdown'] = true,
+                    ['cmp.entry.get_documentation'] = true,
+                  },
+                },
+                presets = {
+                  bottom_search = true,
+                  command_palette = true,
+                  long_message_to_split = true,
+                },
+              })
+            '';
+          };
+          persistence = {
+            # sessions; makes the dashboard "restore session" key meaningful
+            package = pkgs.vimPlugins.persistence-nvim;
+            setup = "require('persistence').setup()";
+          };
+          todo-comments = {
+            package = pkgs.vimPlugins.todo-comments-nvim;
+            setup = "require('todo-comments').setup()";
+          };
+          mini-ai = {
+            # was mini.ai (LazyVim default textobjects)
+            package = pkgs.vimPlugins.mini-nvim;
+            setup = "require('mini.ai').setup()";
+          };
+          dressing = {
+            # was dressing.nvim (avante input provider dep)
+            package = pkgs.vimPlugins.dressing-nvim;
+            setup = "require('dressing').setup()";
           };
         };
 
@@ -1119,6 +1171,83 @@
               end
             '';
             desc = "Super Shift-Tab";
+          }
+
+          # search and replace (was grug-far.nvim, <leader>sr)
+          {
+            key = "<leader>sr";
+            mode = [
+              "n"
+              "x"
+            ];
+            action = "<cmd>GrugFar<cr>";
+            desc = "Search and Replace";
+          }
+
+          # sessions (was persistence.nvim)
+          {
+            key = "<leader>qs";
+            mode = "n";
+            lua = true;
+            action = "function() require('persistence').load() end";
+            desc = "Restore Session";
+          }
+          {
+            key = "<leader>ql";
+            mode = "n";
+            lua = true;
+            action = "function() require('persistence').load({ last = true }) end";
+            desc = "Restore Last Session";
+          }
+          {
+            key = "<leader>qd";
+            mode = "n";
+            lua = true;
+            action = "function() require('persistence').stop() end";
+            desc = "Don't Save Current Session";
+          }
+          {
+            key = "<leader>qS";
+            mode = "n";
+            lua = true;
+            action = "function() require('persistence').select() end";
+            desc = "Select Session";
+          }
+
+          # todo comments (was todo-comments.nvim)
+          {
+            key = "]t";
+            mode = "n";
+            lua = true;
+            action = "function() require('todo-comments').jump_next() end";
+            desc = "Next Todo Comment";
+          }
+          {
+            key = "[t";
+            mode = "n";
+            lua = true;
+            action = "function() require('todo-comments').jump_prev() end";
+            desc = "Previous Todo Comment";
+          }
+          {
+            key = "<leader>xt";
+            mode = "n";
+            action = "<cmd>TodoTrouble<cr>";
+            desc = "Todo (Trouble)";
+          }
+
+          # yank ring cycling (was yanky.nvim)
+          {
+            key = "[y";
+            mode = "n";
+            action = "<Plug>(YankyCycleForward)";
+            desc = "Cycle Forward Through Yank History";
+          }
+          {
+            key = "]y";
+            mode = "n";
+            action = "<Plug>(YankyCycleBackward)";
+            desc = "Cycle Backward Through Yank History";
           }
         ];
       };
