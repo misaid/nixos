@@ -15,7 +15,7 @@
     ./hardware-configuration.nix
     inputs.home-manager.nixosModules.default
     ./modules/zsh.nix
-    # ./modules/nvf-configuration.nix
+    ./modules/nvf-configuration.nix
   ];
   # Bootloader (UEFI systemd-boot).
   boot.loader.systemd-boot.enable = true;
@@ -158,18 +158,7 @@
     tree-sitter
   ];
 
-  programs.nvf = {
-    enable = true;
-    # Your settings need to go into the settings attribute set
-    # most settings are documented in the appendix
-    settings = {
-      vim.viAlias = false;
-      vim.vimAlias = true;
-      vim.lsp = {
-        enable = true;
-      };
-    };
-  };
+  # Neovim is provided declaratively by nvf (see ./modules/nvf-configuration.nix).
 
   # Some programs need SUID wrappers, can be configured further or are
   # started in user sessions.

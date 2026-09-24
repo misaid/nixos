@@ -9,40 +9,25 @@
 
   # --------------------------------------------------
   # Packages (user-only tools)
+  # Neovim itself comes from nvf (system-wide); these are its CLI helpers.
   # --------------------------------------------------
   home.packages = with pkgs; [
-    cbonsai
-      neovim
-  git
-  ripgrep
-  fd
-  gcc
-  nodejs
-  lazygit
+    cbonsai # used by the snacks dashboard terminal section
+    git
+    ripgrep
+    fd
+    gcc
+    nodejs
+    lazygit
+    zathura # vimtex viewer (vimtex_view_method in nvf-configuration.nix)
+    # For LaTeX compilation also add a texlive set, e.g.
+    # (texlive.combine { inherit (texlive) scheme-medium latexmk; })
   ];
 
-home.file.".config/nvim" = {
-  source = ./modules/nvim;
-  recursive = true;
-};
   # --------------------------------------------------
   # Let Home Manager manage itself
   # --------------------------------------------------
   programs.home-manager.enable = true;
-
-  # --------------------------------------------------
-  # Neovim (fully reproducible Tree-sitter)
-  # --------------------------------------------------
-  # programs.neovim = {
-  #   enable = true;
-  #   plugins = [
-  #     pkgs.vimPlugins.nvim-treesitter
-  #   ];
-  # };
-
- # home.file.".config/nvim/init.lua".text = ''
- #    require("config.lazy")
- #  '';
   # --------------------------------------------------
   # Zsh (clean + Nix-safe Powerlevel10k)
   # --------------------------------------------------
