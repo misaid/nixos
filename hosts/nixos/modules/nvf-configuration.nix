@@ -834,6 +834,109 @@
             desc = "Rename File";
           }
 
+          # search / picker family (Lazy default; sk = keymap hints)
+          {
+            key = "<leader>sk";
+            mode = "n";
+            lua = true;
+            action = "function() Snacks.picker.keymaps() end";
+            desc = "Keymaps";
+          }
+          {
+            key = "<leader>ff";
+            mode = "n";
+            lua = true;
+            action = "function() Snacks.picker.files() end";
+            desc = "Find Files";
+          }
+          {
+            key = "<leader><space>";
+            mode = "n";
+            lua = true;
+            action = "function() Snacks.picker.files() end";
+            desc = "Find Files";
+          }
+          {
+            key = "<leader>,";
+            mode = "n";
+            lua = true;
+            action = "function() Snacks.picker.buffers() end";
+            desc = "Buffers";
+          }
+          {
+            key = "<leader>fb";
+            mode = "n";
+            lua = true;
+            action = "function() Snacks.picker.buffers() end";
+            desc = "Buffers";
+          }
+          {
+            key = "<leader>/";
+            mode = "n";
+            lua = true;
+            action = "function() Snacks.picker.grep() end";
+            desc = "Grep";
+          }
+          {
+            key = "<leader>sg";
+            mode = "n";
+            lua = true;
+            action = "function() Snacks.picker.grep() end";
+            desc = "Grep";
+          }
+          {
+            key = "<leader>sw";
+            mode = [
+              "n"
+              "x"
+            ];
+            lua = true;
+            action = "function() Snacks.picker.grep_word() end";
+            desc = "Visual selection or word";
+          }
+          {
+            key = "<leader>fr";
+            mode = "n";
+            lua = true;
+            action = "function() Snacks.picker.recent() end";
+            desc = "Recent";
+          }
+          {
+            key = "<leader>sh";
+            mode = "n";
+            lua = true;
+            action = "function() Snacks.picker.help() end";
+            desc = "Help Pages";
+          }
+          {
+            key = "<leader>sR";
+            mode = "n";
+            lua = true;
+            action = "function() Snacks.picker.resume() end";
+            desc = "Resume";
+          }
+          {
+            key = "<leader>sd";
+            mode = "n";
+            lua = true;
+            action = "function() Snacks.picker.diagnostics() end";
+            desc = "Diagnostics";
+          }
+          {
+            key = "<leader>ss";
+            mode = "n";
+            lua = true;
+            action = "function() Snacks.picker.lsp_symbols() end";
+            desc = "Goto Symbol";
+          }
+          {
+            key = "<leader>sS";
+            mode = "n";
+            lua = true;
+            action = "function() Snacks.picker.lsp_workspace_symbols() end";
+            desc = "Goto Symbol (Workspace)";
+          }
+
           # quit (Lazy default)
           {
             key = "<leader>qq";
