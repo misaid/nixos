@@ -6,6 +6,7 @@
 {
   imports = [
     ./nvf-configuration.nix
+    ./zsh.nix
   ];
 
   networking.hostName = hostname;
@@ -59,6 +60,46 @@
     alsa.support32Bit = true;
     pulse.enable = true;
   };
+
+  # Enable Flatpak
+  services.flatpak.enable = true;
+
+  programs.hyprland = {
+    enable = true;
+    xwayland.enable = true;
+  };
+  environment.sessionVariables = {
+    WLR_NO_HARDWARE_CURSORS = "1";
+    NIXOS_OZONE_WL = "1";
+  };
+
+  hardware.graphics.enable = true;
+
+  # List packages installed in system profile. To search, run:
+  # $ nix search wget
+  environment.systemPackages = with pkgs; [
+    git
+    stow
+    vim
+    wget
+    kitty
+    sl
+    gnome-tweaks
+    uwsm
+    zsh-powerlevel10k
+    meslo-lgs-nf
+    tmuxPlugins.vim-tmux-navigator
+    tmuxPlugins.resurrect
+    tmuxPlugins.continuum
+    foot
+    gcc
+    fzf
+    python3
+    pipenv
+    tmux
+    zoxide
+    tree-sitter
+  ];
 
   # Install firefox.
   programs.firefox.enable = true;

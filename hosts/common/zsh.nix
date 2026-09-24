@@ -75,10 +75,15 @@
     '';
   };
 
-  environment.etc."powerlevel10k/p10k.zsh".source = ../p10k/.p10k.zsh;
+  environment.etc."powerlevel10k/p10k.zsh".source = ./p10k/.p10k.zsh;
   environment.systemPackages = with pkgs; [
     fastfetch
   ];
 
   users.defaultUserShell = pkgs.zsh;
+  environment.shells = [ pkgs.zsh ]; # https://wiki.nixos.org/wiki/Zsh#GDM_does_not_show_user_when_zsh_is_the_default_shell
+  environment.loginShellInit = ''
+    # equivalent to .profile
+    # https://search.nixos.org/options?show=environment.loginShellInit
+  '';
 }

@@ -1,5 +1,6 @@
-# nixos host: physical machine. Shared base lives in ../common.
-{ config, pkgs, inputs, username, ... }:
+# nixos host: physical machine (RTX 2070 + Ryzen 5 3600).
+# Shared base lives in ../common.
+{ config, pkgs, lib, inputs, username, ... }:
 
 {
   imports = [
@@ -7,8 +8,6 @@
     ./hardware-configuration.nix
     ../common
   ];
-
-  programs.zsh.enable = true;
 
   home-manager = {
     extraSpecialArgs = { inherit inputs username; };
@@ -19,15 +18,32 @@
     };
   };
 
-  # List packages installed in system profile. To search, run:
-  # $ nix search wget
-  environment.systemPackages = with pkgs; [
-    vim
-    wget
-    kitty
-    sl
-    gnome-tweaks
-  ];
+  # NVIDIA RTX 2070 (Turing): proprietary driver with modesetting for
+  # Wayland/Hyprland. open = false is the battle-tested pick here;
+  # Turing also supports the open modules (open = true) if you prefer.
+  services.xserver.videoDrivers = [ "nvidia" ];
+  hardware.graphics.enable32Bit = true; # Steam/Proton + 32-bit games
+  hardware.nvidia = {
+    modesetting.enable = true;
+    powerManagement.enable = true;
+    powerManagement.finegrained = false; # laptops only, must stay off on desktop
+    open = false;
+    nvidiaSettings = true;
+  };
+  # Preserve VRAM across suspend so resume doesn't lose the display.
+  boot.kernelParams = [ "nvidia.NVreg_PreserveVideoMemoryAllocations=1" ];
+
+  # Extra Wayland env for NVIDIA (base Wayland vars live in ../common).
+  environment.sessionVariables = {
+    LIBVA_DRIVER_NAME = "nvidia";
+    __GLX_VENDOR_LIBRARY_NAME = "nvidia";
+  };
+
+  # Ryzen 5 3600 microcode updates.
+  hardware.cpu.amd.updateMicrocode = lib.mkDefault config.hardware.enableRedistributableFirmware;
+
+  # Frame-rate friendly gaming helper (run games with gamemoderun).
+  programs.gamemode.enable = true;
 
   # Some programs need SUID wrappers, can be configured further or are
   # started in user sessions.
