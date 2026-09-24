@@ -19,6 +19,15 @@ Multi-host NixOS flake (Home Manager + nvf). Shared config lives in
 
 ## Install on a new machine
 
+One-shot (does every step below, with checks):
+
+```bash
+sudo curl -o /tmp/install.sh https://raw.githubusercontent.com/misaid/nixos/systemd-boot/install.sh
+sudo bash /tmp/install.sh <name>   # vmware for the VM, nixos for the physical box
+```
+
+Manual equivalent:
+
 ```bash
 # 1. Back up the stock config (it holds this machine's generated
 #    hardware-configuration.nix).
