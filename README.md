@@ -64,6 +64,23 @@ nix fmt
 sudo nixos-rebuild switch --rollback
 ```
 
+## Web development (Node/npm)
+
+- **Project deps just work:** `nodejs` (plus `gcc`/`python3` for `node-gyp`)
+  is installed, so plain `npm install` inside a project dir behaves like
+  any other distro — `node_modules` stays local and impure.
+- **Never `npm install -g`** into the store. Need a global tool? Prefer the
+  nix package; otherwise set `prefix=$HOME/.npm-global`.
+- **Per-project Node versions:** add a `flake.nix` + `.envrc` in the project
+  pinning e.g. `nodejs_22` and enter with `nix develop` (use `direnv` +
+  `nix-direnv` to auto-enter). No nvm needed.
+- **`pnpm`/`yarn`:** same pattern — binary via nix, deps in the workspace.
+- **Downloaded binaries fail?** Prisma engines, Playwright browsers, etc.
+  die with "No such file or directory" (unpatched interpreter). Fix:
+  enable `programs.nix-ld` in `hosts/common`.
+- **Packaging a JS app as a Nix package** is a separate job for
+  `dream2nix`/`npmlock2nix` — not daily dev, don't conflate them.
+
 ## Add a new machine
 
 1. `mkdir hosts/<name>` with `configuration.nix`, `home.nix`, and a locally
@@ -85,3 +102,8 @@ sudo nixos-rebuild switch --rollback
   must match the machine it's on.
 - **Login loop / no password:** run `sudo passwd a`.
 - **Flake input errors after months away:** `nix flake update`, then rebuild.
+- **`hardware-configuration.nix` invisible to the flake:** it's gitignored
+  by design, and flakes only see git-tracked files. After generating it,
+  stage it without committing:
+  `git add -f hosts/<name>/hardware-configuration.nix`
+  (committing would publish your disk UUIDs).
