@@ -5,9 +5,9 @@
 # Dropped (no equivalent without lazy/Mason):
 #   <leader>l / :Lazy, :Mason, dashboard "lazy"/"mason" entries,
 #   <leader>uF/uf format-toggle, profiler toggles, <leader>gG duplicate,
-#   snacks dashboard 2-pane layout (mixed Lua tables aren't expressible in Nix),
-#   dashboard custom formats/icon fns, `startup` section (needs lazy.stats),
-#   _G.dd/_G.bt debug globals.
+#   snacks dashboard 2-pane layout, custom formats and _G.dd/_G.bt globals
+#   restored via lua-inline values and "@n" positional keys,
+#   dashboard `startup` section (needs lazy.stats; static footer instead).
 # Simplified: <esc> just clears hlsearch, <leader>u* toggles use plain :set.
 { config, pkgs, ... }:
 
@@ -114,16 +114,41 @@
 
         mini.tabline.enable = false; # replaced by bufferline below (was LazyVim default)
 
+        # mini.icons provides the MiniIcons* highlight groups the dashboard
+        # formats use, plus file icons for snacks (LazyVim parity).
+        mini.icons.enable = true;
+
+        # Floating file manager behind the dashboard's `e` key (was
+        # `:lua require('mini.files').open()` in snacks.lua).
+        mini.files.enable = true;
+
         tabline.nvimBufferline.enable = true; # was bufferline.nvim (LazyVim default)
 
         filetree.nvimTree = {
           enable = true;
           mappings.toggle = " e";
           setupOpts.hijack_cursor = true;
+          # NOTE: nvf's openOnSetup opens the tree even for empty `[No Name]`
+          # buffers, which steals snacks' single-window condition and kills
+          # the dashboard on bare `nvim`. Directory opens still work via
+          # nvim-tree's own hijack_netrw.
+          openOnSetup = false;
         };
 
+        # Debug globals from snacks.lua's init(): safe anywhere in init
+        # because the bodies only touch `Snacks` when actually called.
+        pluginRC.snacks-debug-globals = ''
+          _G.dd = function(...) Snacks.debug.inspect(...) end
+          _G.bt = function() Snacks.debug.backtrace() end
+          vim.print = _G.dd
+        '';
+
         # Snacks (was lua/plugins/snacks.lua). setupOpts passes straight
-        # through to require("snacks").setup(), Nix syntax instead of Lua.
+        # through to require("snacks").setup(), Nix syntax instead of Lua,
+        # with two escape hatches (both verified against pinned nvf's
+        # lib/lua.nix): `{ _type = "lua-inline"; expr = "..."; }` renders a
+        # value verbatim (for Lua functions), and `"@n"` attr names render
+        # as positional entries (for mixed tables like the 2-pane layout).
         utility.snacks-nvim = {
           enable = true;
           setupOpts = {
@@ -163,6 +188,23 @@
             };
             dashboard = {
               enabled = true;
+              # Custom formats, verbatim from snacks.lua (needs mini.icons
+              # above for the MiniIcons* groups).
+              formats = {
+                key = {
+                  _type = "lua-inline";
+                  expr = ''function(item) return { { "[", hl = "function" }, { item.key, hl = "key" }, { "]", hl = "function" } } end'';
+                };
+                header = {
+                  "@1" = "%s";
+                  align = "center";
+                  hl = "MiniIconsBlue";
+                };
+                icon = {
+                  _type = "lua-inline";
+                  expr = ''function(item) if item.file and item.icon == "file" or item.icon == "directory" then return Snacks.dashboard.icon(item.file, item.icon) end return { item.icon, width = 2, hl = "MiniIconsPurple" } end'';
+                };
+              };
               preset.keys = [
                 {
                   icon = " ";
@@ -195,7 +237,7 @@
                   icon = " ";
                   key = "e";
                   desc = "explorer";
-                  action = ":NvimTreeToggle";
+                  action = ":lua require('mini.files').open()";
                 }
                 {
                   icon = " ";
@@ -216,6 +258,9 @@
                   action = ":qa";
                 }
               ];
+              # Two-pane layout verbatim from snacks.lua: `"@n"` keys render
+              # as positional entries, so this becomes
+              # `{ {...}, { pane = 2, {...}, ... } }` in Lua.
               sections = [
                 {
                   section = "terminal";
@@ -224,19 +269,38 @@
                   padding = 1;
                 }
                 {
-                  section = "keys";
-                  gap = 1;
-                  padding = 1;
+                  pane = 2;
+                  "@1" = {
+                    title = "shortcuts";
+                    hl = "";
+                  };
+                  "@2" = {
+                    section = "keys";
+                    padding = 1;
+                  };
+                  "@3" = {
+                    title = "mru ";
+                    file = {
+                      _type = "lua-inline";
+                      expr = ''vim.fn.fnamemodify(".", ":~")'';
+                    };
+                    padding = 1;
+                  };
+                  "@4" = {
+                    section = "recent_files";
+                    cwd = true;
+                    limit = 5;
+                    padding = 1;
+                  };
+                  # NOTE: stock `{ section = "startup" }` calls
+                  # require("lazy.stats"), which doesn't exist without
+                  # lazy.nvim and aborts the whole dashboard render.
+                  # Static footer stands in.
+                  "@5" = {
+                    align = "center";
+                    text = "nvf";
+                  };
                 }
-                {
-                  section = "recent_files";
-                  cwd = true;
-                  limit = 5;
-                  padding = 1;
-                }
-                # NOTE: no `startup` section — it calls
-                # require("lazy.stats"), which doesn't exist without lazy.nvim
-                # and aborts the whole dashboard render.
               ];
             };
             styles = {
