@@ -120,6 +120,9 @@ Notes:
 - Re-stow after pulling dotfile updates:
   `cd ~/dotfiles && stow -t ~ <package>`.
   Never stow `nvim`, `zsh`, `avante.nvim` or `spicetify`.
+- Already installed and just want the dotfiles re-synced (pull + restow,
+  no rebuild, no sudo needed):
+  `bash /tmp/install.sh --sync-only` (same `STOW_PKGS`, same exclusions).
 
 ## Spotify (spicetify)
 
