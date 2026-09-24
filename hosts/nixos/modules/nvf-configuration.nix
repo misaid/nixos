@@ -358,6 +358,15 @@
             package = pkgs.vimPlugins.dressing-nvim;
             setup = "require('dressing').setup()";
           };
+          markdown-preview = {
+            # was markdown-preview.nvim (<leader>cp).
+            # NOTE: on first use the plugin wants to build its node server
+            # (:call mkdp#util#install), which fails from the read-only
+            # /nix/store. If preview doesn't start, that build is why —
+            # inline rendering via render-markdown (already enabled) always works.
+            package = pkgs.vimPlugins.markdown-preview-nvim;
+            setup = "";
+          };
         };
 
         # ---- Keymaps: LazyVim defaults, yours win on conflict ----
@@ -1234,6 +1243,14 @@
             mode = "n";
             action = "<cmd>TodoTrouble<cr>";
             desc = "Todo (Trouble)";
+          }
+
+          # markdown browser preview (was markdown-preview.nvim)
+          {
+            key = "<leader>cp";
+            mode = "n";
+            action = "<cmd>MarkdownPreviewToggle<cr>";
+            desc = "Markdown Preview";
           }
 
           # yank ring cycling (was yanky.nvim)
