@@ -6,6 +6,7 @@
 {
   imports = [
     ./nvf-configuration.nix
+    ./silent-lana.nix
     ./zsh.nix
   ];
 
@@ -44,40 +45,8 @@
     variant = "";
   };
 
-  # Login manager: SilentSDDM (custom video background) + GNOME.
-  # SDDM is only the session picker — GNOME handles screen locking.
-  # Upstream removed the "lana" preset, so we use "rei" (identical layout,
-  # lavender accents) with your custom video/placeholder injected.
-  # Videos live in ./assets (vendored from your Arch setup) and are
-  # injected via backgrounds + settings so filenames always line up.
-  programs.silentSDDM =
-    let
-      lanaVideo = pkgs.runCommand "lana.mp4" { } ''
-        cp ${./assets/lana.mp4} $out
-      '';
-      lanaPlaceholder = pkgs.runCommand "lana.png" { } ''
-        cp ${./assets/lana.png} $out
-      '';
-    in
-    {
-      enable = true;
-      theme = "rei";
-      backgrounds = {
-        inherit lanaVideo lanaPlaceholder;
-      };
-      settings = {
-        General = {
-          animated-background-placeholder = lanaPlaceholder.name;
-        };
-        # SDDM lock screen off — use GNOME locker instead.
-        LockScreen = {
-          display = false;
-        };
-        LoginScreen = {
-          background = lanaVideo.name;
-        };
-      };
-    };
+  # Login manager (custom SilentSDDM "lana" theme, see ./silent-lana.nix)
+  # + GNOME. SDDM only picks the session; GNOME owns screen locking.
   services.desktopManager.gnome.enable = true;
 
   # Enable CUPS to print documents.
