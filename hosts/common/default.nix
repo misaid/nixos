@@ -44,9 +44,11 @@
     variant = "";
   };
 
-  # Login manager (stock SDDM) + GNOME.
+  # Login manager (stock SDDM) + GNOME. SDDM itself runs on X11: its Wayland
+  # greeter gets an invisible/broken cursor on VMware SVGA (and is flaky on
+  # NVIDIA too). An X11 greeter can still launch Wayland sessions fine.
   services.displayManager.sddm.enable = true;
-  services.displayManager.sddm.wayland.enable = true;
+  services.displayManager.sddm.wayland.enable = false;
   services.desktopManager.gnome.enable = true;
 
   # Enable CUPS to print documents.
