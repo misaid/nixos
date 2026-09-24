@@ -1,7 +1,7 @@
 { config, pkgs, username, ... }:
 
 {
-  imports = [ ../common/spicetify.nix ];
+  imports = [ ../common/spicetify.nix ../common/caelestia.nix ];
 
   home.username = username;
   home.homeDirectory = "/home/${username}";
@@ -37,7 +37,7 @@
     jrnl
     qbittorrent
     fastfetch
-    caelestia-shell
+    # caelestia-shell comes from its flake (see ../common/caelestia.nix).
     # hyprpanel: config is stowed, but nixpkgs carries no binary for it.
   ];
 
