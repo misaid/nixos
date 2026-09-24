@@ -56,7 +56,11 @@
           foldmethod = "indent";
         };
 
-        useSystemClipboard = true;
+        clipboard = {
+          enable = true;
+          registers = "unnamedplus"; # replaces removed vim.useSystemClipboard
+          providers.wl-copy.enable = true; # Wayland (Hyprland/GNOME)
+        };
 
         # Theme (was lua/plugins/tokynight.lua: transparent tokyonight).
         theme = {
@@ -257,7 +261,12 @@
         utility.motion.flash-nvim.enable = true; # was flash.nvim (LazyVim defaults s/S/r/R)
         utility.surround.enable = true;
         utility.grug-far-nvim.enable = true; # was grug-far.nvim (<leader>sr)
-        utility.yanky-nvim.enable = true; # was yanky.nvim ([y/]y ring cycling)
+        utility.yanky-nvim = {
+          enable = true; # was yanky.nvim ([y/]y ring cycling)
+          # shada backend requires shada enabled in vim.options; sqlite
+          # stays persistent without it (nvf adds the dependency).
+          setupOpts.ring.storage = "sqlite";
+        };
         utility.leetcode-nvim.enable = true; # was lua/plugins/leet.lua (defaults)
 
         # Avante (was lua/plugins/avante.lua, provider claude).
