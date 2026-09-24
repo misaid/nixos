@@ -58,7 +58,10 @@ nix-shell -p git --run 'sudo env PATH="$PATH" git -C /etc/nixos add -f hosts/<na
 #    Still wrapped: this first build runs before git exists on the system.
 nix-shell -p git --run "sudo nixos-rebuild switch --flake /etc/nixos#<name>"
 
-# 7. Set the login password (the flake-table user has none until you do).
+# 7. Set the login password — usually unnecessary: a password set in the
+#    graphical installer survives the rebuild, and install.sh skips this
+#    automatically when one exists. Only needed if the flake-table user
+#    is brand new (no password yet):
 sudo passwd nixmo   # replace nixmo with your hosts-table username
 ```
 

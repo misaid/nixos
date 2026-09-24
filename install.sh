@@ -112,7 +112,13 @@ nix-shell -p git --run "nixos-rebuild switch --flake $DEST#$HOST"
 #    home.packages.
 sync_dotfiles "$USERNAME" "/home/$USERNAME"
 
-# 9. Login password (user has none until now).
-passwd "$USERNAME"
+# 9. Login password — only if the user has none yet. A password set in the
+#    graphical installer survives the rebuild (mutableUsers keeps /etc/shadow),
+#    so this is a no-op on the normal path.
+if passwd --status "$USERNAME" 2>/dev/null | grep -q " P "; then
+  echo "User $USERNAME already has a password — keeping it."
+else
+  passwd "$USERNAME"
+fi
 
 echo "Done. Reboot, pick the newest generation, remove /etc/nixos.bak when happy."
