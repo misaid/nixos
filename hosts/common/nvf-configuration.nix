@@ -6,7 +6,8 @@
 #   <leader>l / :Lazy, :Mason, dashboard "lazy"/"mason" entries,
 #   <leader>uF/uf format-toggle, profiler toggles, <leader>gG duplicate,
 #   snacks dashboard 2-pane layout (mixed Lua tables aren't expressible in Nix),
-#   dashboard custom formats/icon fns, _G.dd/_G.bt debug globals.
+#   dashboard custom formats/icon fns, `startup` section (needs lazy.stats),
+#   _G.dd/_G.bt debug globals.
 # Simplified: <esc> just clears hlsearch, <leader>u* toggles use plain :set.
 { config, pkgs, ... }:
 
@@ -126,24 +127,25 @@
         utility.snacks-nvim = {
           enable = true;
           setupOpts = {
-            bigfile.enable = true;
-            quickfile.enable = true;
-            bufdelete.enable = true;
-            git.enable = true;
-            rename.enable = true;
-            statuscolumn.enable = true;
-            terminal.enable = true;
-            input.enable = true;
-            picker.enable = true; # needed by dashboard pick() actions
-            image.enable = true;
+            # NOTE: snacks' toggle key is `enabled`, not nvf-style `enable`.
+            bigfile.enabled = true;
+            quickfile.enabled = true;
+            bufdelete.enabled = true;
+            git.enabled = true;
+            rename.enabled = true;
+            statuscolumn.enabled = true;
+            terminal.enabled = true;
+            input.enabled = true;
+            picker.enabled = true; # needed by dashboard pick() actions
+            image.enabled = true;
             indent = {
-              enable = true;
+              enabled = true;
               indent.enabled = false;
               animate.enabled = false;
               scope.treesitter.enabled = true;
             };
             lazygit = {
-              enable = true;
+              enabled = true;
               theme = {
                 activeBorderColor = {
                   fg = "DiagnosticWarn";
@@ -156,11 +158,11 @@
               };
             };
             notifier = {
-              enable = true;
+              enabled = true;
               timeout = 3000;
             };
             dashboard = {
-              enable = true;
+              enabled = true;
               preset.keys = [
                 {
                   icon = " ";
@@ -172,7 +174,10 @@
                   icon = " ";
                   key = "s";
                   desc = "restore session";
-                  section = "session";
+                  # NOTE: the stock `section = "session"` resolver only knows
+                  # lazy.nvim-era session managers, so it silently drops this
+                  # key without lazy. Point it at persistence.nvim directly.
+                  action = ":lua require('persistence').load()";
                 }
                 {
                   icon = " ";
@@ -229,7 +234,9 @@
                   limit = 5;
                   padding = 1;
                 }
-                { section = "startup"; }
+                # NOTE: no `startup` section — it calls
+                # require("lazy.stats"), which doesn't exist without lazy.nvim
+                # and aborts the whole dashboard render.
               ];
             };
             styles = {
