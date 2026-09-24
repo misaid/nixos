@@ -14,7 +14,7 @@
     in
     {
       enable = true;
-      theme = spicePkgs.themes.tokyonight;
+      theme = spicePkgs.themes.tokyoNight;
       enabledExtensions = with spicePkgs.extensions; [
         shuffle
         hidePodcasts
