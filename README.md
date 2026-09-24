@@ -58,8 +58,8 @@ nix-shell -p git --run 'sudo env PATH="$PATH" git -C /etc/nixos add -f hosts/<na
 #    Still wrapped: this first build runs before git exists on the system.
 nix-shell -p git --run "sudo nixos-rebuild switch --flake /etc/nixos#<name>"
 
-# 7. Set the login password (user a has none until you do).
-sudo passwd a
+# 7. Set the login password (the flake-table user has none until you do).
+sudo passwd a   # replace a with your hosts-table username
 ```
 
 ## Everyday use (run from /etc/nixos)
@@ -104,8 +104,10 @@ sudo nixos-rebuild switch --rollback
 1. `mkdir hosts/<name>` with `configuration.nix`, `home.nix`, and a locally
    generated `hardware-configuration.nix` (see install step 3 — never copy
    one from another machine).
-2. Add one line to the `hosts` table in `flake.nix`:
-   `<name> = "x86_64-linux";` (or `"aarch64-linux"` for ARM).
+2. Add one entry to the `hosts` table in `flake.nix`:
+   `<name> = { system = "x86_64-linux"; username = "<login-user>"; };`
+   (or `"aarch64-linux"` for ARM). Use the SAME username you create in
+   the graphical installer, or that installer user lingers unmanaged.
 3. The hostname is set automatically from the table key — don't set
    `networking.hostName` in the host config.
 4. `sudo nixos-rebuild switch --flake .#<name>`.
@@ -118,7 +120,11 @@ sudo nixos-rebuild switch --rollback
 - **Boots to the wrong entry / won't boot:** you switched disk layouts
   without regenerating `hardware-configuration.nix` (step 3). The file
   must match the machine it's on.
-- **Login loop / no password:** run `sudo passwd a`.
+- **Login loop / no password:** run `sudo passwd <your-username>`.
+- **Stray installer-made user:** if the username you created in the
+  graphical installer differs from the flake table's `username`, the
+  installer one lingers unmanaged (wrong shell, no Home Manager). Either
+  match the table to it, or remove it with `sudo userdel -r <name>`.
 - **Flake input errors after months away:** `nix flake update`, then rebuild.
 - **`hardware-configuration.nix` invisible to the flake:** covered by
   install step 5 (`git add -f`, never commit). If a rebuild ever complains

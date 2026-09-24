@@ -1,7 +1,7 @@
 # Shared base for all hosts. Machine-specific bits (hardware, desktop
 # extras, extra packages) stay in hosts/<name>/configuration.nix.
-# The hostname comes from the flake's hosts table via specialArgs.
-{ config, pkgs, hostname, ... }:
+# Hostname and username come from the flake's hosts table via specialArgs.
+{ config, pkgs, hostname, username, ... }:
 
 {
   imports = [
@@ -67,7 +67,7 @@
   nixpkgs.config.allowUnfree = true;
 
   # Define a user account. Don't forget to set a password with ‘passwd’.
-  users.users.a = {
+  users.users.${username} = {
     isNormalUser = true;
     description = "a";
     shell = pkgs.zsh;

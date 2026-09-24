@@ -1,12 +1,15 @@
 #!/usr/bin/env bash
 # Fresh-machine installer for this flake. Run on the target machine:
 #   sudo curl -o /tmp/install.sh https://raw.githubusercontent.com/misaid/nixos/systemd-boot/install.sh
-#   sudo bash /tmp/install.sh <hostname>
-# <hostname> must match a hosts/<hostname>/ directory (today: vmware, nixos).
+#   sudo bash /tmp/install.sh <hostname> [username]
+# <hostname> must match a hosts/<hostname>/ directory (today: vmware, nixos);
+# [username] must match its hosts-table username (default: a).
 # NOTE: the branch in the URL above must match the branch this file is on.
 set -euo pipefail
 
-HOST="${1:?usage: install.sh <hostname>  (e.g. install.sh vmware)}"
+HOST="${1:?usage: install.sh <hostname> [username]  (e.g. install.sh vmware)}"
+# Must match the username in the flake's hosts table for this host.
+USERNAME="${2:-a}"
 REPO="https://github.com/misaid/nixos"
 BRANCH="systemd-boot"
 DEST="/etc/nixos"
@@ -54,7 +57,7 @@ nix-shell -p git --run "git -C $DEST add -f hosts/$HOST/hardware-configuration.n
 # 7. Build and switch (still wrapped: git lands on the system only now).
 nix-shell -p git --run "nixos-rebuild switch --flake $DEST#$HOST"
 
-# 8. Login password (user a has none until now).
-passwd a
+# 8. Login password (user has none until now).
+passwd "$USERNAME"
 
 echo "Done. Reboot, pick the newest generation, remove /etc/nixos.bak when happy."

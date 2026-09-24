@@ -1,5 +1,5 @@
 # nixos host: physical machine. Shared base lives in ../common.
-{ config, pkgs, inputs, ... }:
+{ config, pkgs, inputs, username, ... }:
 
 {
   imports = [
@@ -11,11 +11,11 @@
   programs.zsh.enable = true;
 
   home-manager = {
-    extraSpecialArgs = { inherit inputs; };
+    extraSpecialArgs = { inherit inputs username; };
     useGlobalPkgs = true;
     useUserPackages = true;
     users = {
-      "a" = import ./home.nix;
+      "${username}" = import ./home.nix;
     };
   };
 

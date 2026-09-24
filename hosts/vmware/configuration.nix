@@ -3,6 +3,7 @@
   config,
   pkgs,
   inputs,
+  username,
   ...
 }:
 
@@ -20,12 +21,12 @@
   services.flatpak.enable = true;
 
   home-manager = {
-    extraSpecialArgs = { inherit inputs; };
+    extraSpecialArgs = { inherit inputs username; };
     useGlobalPkgs = true;
     useUserPackages = true;
 
     users = {
-      "a" = import ./home.nix;
+      "${username}" = import ./home.nix;
     };
   };
 

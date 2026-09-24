@@ -17,26 +17,34 @@
 
   outputs = { self, nixpkgs, ... }@inputs:
   let
-    # Add a machine here: <host directory under ./hosts> = <system arch>.
+    # Add a machine here: <host directory> = { system arch, login user }.
     # The directory must contain configuration.nix (plus home.nix and a
     # locally generated hardware-configuration.nix, which is gitignored).
+    # Use the SAME username you create in the graphical installer — otherwise
+    # the installer-made user lingers as an unmanaged leftover next to it.
     hosts = {
-      vmware = "x86_64-linux";
-      nixos = "x86_64-linux";
+      vmware = {
+        system = "x86_64-linux";
+        username = "a";
+      };
+      nixos = {
+        system = "x86_64-linux";
+        username = "a";
+      };
     };
 
-    systems = nixpkgs.lib.unique (builtins.attrValues hosts);
+    systems = nixpkgs.lib.unique (map (h: h.system) (builtins.attrValues hosts));
 
     commonModules = [
       inputs.home-manager.nixosModules.default
       inputs.nvf.nixosModules.default
     ];
 
-    mkHost = hostname: system:
+    mkHost = hostname: { system, username }:
       nixpkgs.lib.nixosSystem {
         inherit system;
 
-        specialArgs = { inherit inputs system hostname; };
+        specialArgs = { inherit inputs system hostname username; };
 
         modules = commonModules ++ [
           ./hosts/${hostname}/configuration.nix
