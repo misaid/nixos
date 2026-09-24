@@ -1,0 +1,6 @@
+# Generated per machine — disk UUIDs differ on every install, never commit.
+hosts/*/hardware-configuration.nix
+
+# nix build output symlinks
+result
+result-*

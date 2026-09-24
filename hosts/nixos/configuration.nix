@@ -14,8 +14,6 @@
     ./modules/zsh.nix
   ];
 
-  networking.hostName = "nixos"; # Define your hostname.
-
   virtualisation.vmware.guest.enable = true;
 
   # Enable Flatpak

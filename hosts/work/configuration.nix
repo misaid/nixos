@@ -8,8 +8,6 @@
     ../common
   ];
 
-  networking.hostName = "work"; # Define your hostname.
-
   programs.zsh.enable = true;
 
   home-manager = {

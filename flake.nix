@@ -17,36 +17,36 @@
 
   outputs = { self, nixpkgs, ... }@inputs:
   let
-    system = "x86_64-linux";
+    # Add a machine here: <host directory under ./hosts> = <system arch>.
+    # The directory must contain configuration.nix (plus home.nix and a
+    # locally generated hardware-configuration.nix, which is gitignored).
+    hosts = {
+      nixos = "x86_64-linux";
+      work = "x86_64-linux";
+    };
+
+    systems = nixpkgs.lib.unique (builtins.attrValues hosts);
 
     commonModules = [
       inputs.home-manager.nixosModules.default
       inputs.nvf.nixosModules.default
     ];
+
+    mkHost = hostname: system:
+      nixpkgs.lib.nixosSystem {
+        inherit system;
+
+        specialArgs = { inherit inputs system hostname; };
+
+        modules = commonModules ++ [
+          ./hosts/${hostname}/configuration.nix
+        ];
+      };
   in
   {
-    formatter.${system} = nixpkgs.legacyPackages.${system}.nixfmt-rfc-style;
+    formatter = nixpkgs.lib.genAttrs systems
+      (system: nixpkgs.legacyPackages.${system}.nixfmt-rfc-style);
 
-    nixosConfigurations = {
-      nixos = nixpkgs.lib.nixosSystem {
-        inherit system;
-
-        specialArgs = { inherit inputs system; };
-
-        modules = commonModules ++ [
-          ./hosts/nixos/configuration.nix
-        ];
-      };
-
-      work = nixpkgs.lib.nixosSystem {
-        inherit system;
-
-        specialArgs = { inherit inputs system; };
-
-        modules = commonModules ++ [
-          ./hosts/work/configuration.nix
-        ];
-      };
-    };
+    nixosConfigurations = nixpkgs.lib.mapAttrs mkHost hosts;
   };
 }

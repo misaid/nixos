@@ -1,11 +1,14 @@
-# Shared base for all hosts. Machine-specific bits (hostname, hardware,
-# desktop extras, extra packages) stay in hosts/<name>/configuration.nix.
-{ config, pkgs, ... }:
+# Shared base for all hosts. Machine-specific bits (hardware, desktop
+# extras, extra packages) stay in hosts/<name>/configuration.nix.
+# The hostname comes from the flake's hosts table via specialArgs.
+{ config, pkgs, hostname, ... }:
 
 {
   imports = [
     ./nvf-configuration.nix
   ];
+
+  networking.hostName = hostname;
 
   # Bootloader (UEFI systemd-boot). All hosts are UEFI installs.
   boot.loader.systemd-boot.enable = true;
