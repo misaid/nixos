@@ -22,6 +22,21 @@
     zathura # vimtex viewer (vimtex_view_method in ../common/nvf-configuration.nix)
     # For LaTeX compilation also add a texlive set, e.g.
     # (texlive.combine { inherit (texlive) scheme-medium latexmk; })
+
+    # Binaries backing the stowed dotfiles (github.com/misaid/dotfiles).
+    # nvim/zsh/avante come from the flake itself, not here.
+    alacritty
+    ghostty
+    btop
+    cava
+    mpv
+    vlc
+    zed-editor
+    jrnl
+    qbittorrent
+    neofetch
+    caelestia-shell
+    # hyprpanel: config is stowed, but nixpkgs carries no binary for it.
   ];
 
   # --------------------------------------------------

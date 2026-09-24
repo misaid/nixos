@@ -99,6 +99,28 @@ sudo nixos-rebuild switch --rollback
 - **Packaging a JS app as a Nix package** is a separate job for
   `dream2nix`/`npmlock2nix` — not daily dev, don't conflate them.
 
+## Dotfiles (stow sister repo)
+
+`install.sh` step 8 clones `github.com/misaid/dotfiles` to `~/dotfiles`
+and stows everything **except** `nvim`, `zsh` and `avante.nvim` — those
+are owned by this flake (nvf / the omz module) and stowing them would
+fight it. The binaries backing the stowed configs live in
+`home.packages` on both hosts.
+
+Notes:
+
+- The flake enables Hyprland but ships no Hyprland config of its own —
+  stowing `hypr/` fills that gap. Eyeball it on first launch: it was
+  written for Arch, so absolute paths and monitor names may need edits
+  (especially on the NVIDIA box).
+- `hyprpanel/` is stowed but nixpkgs has no `hyprpanel` binary, so that
+  config stays dormant until you source the program another way.
+- `spicetify/` is stowed, but theming still needs the `spicetify-nix`
+  flake input wired up (see the web-dev section's pointer).
+- Re-stow after pulling dotfile updates:
+  `cd ~/dotfiles && stow -t ~ <package>`.
+  Never stow `nvim`, `zsh` or `avante.nvim`.
+
 ## Add a new machine
 
 1. `mkdir hosts/<name>` with `configuration.nix`, `home.nix`, and a locally
