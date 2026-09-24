@@ -44,8 +44,38 @@
     variant = "";
   };
 
-  # Enable the GNOME Desktop Environment.
-  services.displayManager.gdm.enable = true;
+  # Login manager: SilentSDDM (custom video background) + GNOME.
+  # SDDM is only the session picker — GNOME handles screen locking.
+  # Videos live in ./assets (vendored from your Arch setup) and are
+  # injected via backgrounds + settings so filenames always line up.
+  programs.silentSDDM =
+    let
+      lanaVideo = pkgs.runCommand "lana.mp4" { } ''
+        cp ${./assets/lana.mp4} $out
+      '';
+      lanaPlaceholder = pkgs.runCommand "lana.png" { } ''
+        cp ${./assets/lana.png} $out
+      '';
+    in
+    {
+      enable = true;
+      theme = "lana";
+      backgrounds = {
+        inherit lanaVideo lanaPlaceholder;
+      };
+      settings = {
+        General = {
+          animated-background-placeholder = lanaPlaceholder.name;
+        };
+        # SDDM lock screen off — use GNOME locker instead.
+        LockScreen = {
+          display = false;
+        };
+        LoginScreen = {
+          background = lanaVideo.name;
+        };
+      };
+    };
   services.desktopManager.gnome.enable = true;
 
   # Enable CUPS to print documents.

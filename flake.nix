@@ -23,6 +23,11 @@
       url = "github:caelestia-dots/shell";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    silentSDDM = {
+      url = "github:uiriansan/SilentSDDM";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs = { self, nixpkgs, ... }@inputs:
@@ -48,6 +53,7 @@
     commonModules = [
       inputs.home-manager.nixosModules.default
       inputs.nvf.nixosModules.default
+      inputs.silentSDDM.nixosModules.default
     ];
 
     mkHost = hostname: { system, username }:
