@@ -1,4 +1,4 @@
-# Migrated from LazyVim (hosts/nixos/modules/nvim/*) to native nvf.
+# Migrated from LazyVim to native nvf. Shared by all hosts via hosts/common/default.nix.
 # No lazy.nvim, no Mason: plugins/LSP/formatters come from nixpkgs.
 #
 # Keybind policy: LazyVim defaults kept, your custom ones win on conflict.

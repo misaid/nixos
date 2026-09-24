@@ -4,7 +4,7 @@
   home.username = "a";
   home.homeDirectory = "/home/a";
 
-  home.stateVersion = "26.05";
+  home.stateVersion = "25.11";
 
 
   # --------------------------------------------------
@@ -19,7 +19,7 @@
     gcc
     nodejs
     lazygit
-    zathura # vimtex viewer (vimtex_view_method in nvf-configuration.nix)
+    zathura # vimtex viewer (vimtex_view_method in ../common/nvf-configuration.nix)
     # For LaTeX compilation also add a texlive set, e.g.
     # (texlive.combine { inherit (texlive) scheme-medium latexmk; })
   ];
