@@ -36,7 +36,7 @@
     zed-editor
     jrnl
     qbittorrent
-    neofetch
+    fastfetch
     caelestia-shell
     # hyprpanel: config is stowed, but nixpkgs carries no binary for it.
   ];
