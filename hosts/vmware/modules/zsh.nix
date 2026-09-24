@@ -10,6 +10,12 @@
     ohMyZsh = {
       enable = true;
 
+      # Powerlevel10k loads as the omz theme so exactly one prompt framework
+      # is active. (Previously omz fell back to robbyrussell, which loaded
+      # alongside p10k from promptInit below and fought it.)
+      theme = "powerlevel10k";
+      custom = "${pkgs.zsh-powerlevel10k}/share/zsh-powerlevel10k";
+
       plugins = [
         "git"
         "sudo"
@@ -17,7 +23,6 @@
         "docker"
         "pipenv"
         "python"
-        "archlinux"
         "dotnet"
         "zoxide"
       ];
@@ -34,7 +39,6 @@
       vi = "nvim";
       fu = "flatpak upgrade";
       fix_bluetooth = "~/Scripts/fix_bt_1.sh";
-      pacsearch = "pacman -Q | grep";
       flatsearch = "flatpak list | grep";
       asearch = "alias | grep";
       ocon = "~/Scripts/ocon.zsh";
@@ -44,8 +48,12 @@
       cherish = "~/Projects/learnrust/cherish/target/debug/cherish";
     };
 
+    # Only the p10k *user config* is sourced here — the theme itself loads
+    # via ohMyZsh above. promptInit runs last in /etc/zshrc, which is the
+    # correct p10k ordering (theme first, user config after).
+    # NOTE: the omz module wipes promptInit with mkDefault, but an explicit
+    # value like this one still wins, so this survives.
     promptInit = ''
-      source ${pkgs.zsh-powerlevel10k}/share/zsh-powerlevel10k/powerlevel10k.zsh-theme
       source /etc/powerlevel10k/p10k.zsh
     '';
 
@@ -53,7 +61,7 @@
       setopt NO_BEEP
 
       export EDITOR="nvim"
-      export HISTORY="$HOME/.zsh_history"
+      export HISTFILE="$HOME/.zsh_history"
       export OPENAI_API_KEY=""
 
       HISTSIZE=10000
@@ -69,8 +77,6 @@
 
   environment.etc."powerlevel10k/p10k.zsh".source = ../p10k/.p10k.zsh;
   environment.systemPackages = with pkgs; [
-    zsh
-    zsh-powerlevel10k
     fastfetch
   ];
 
