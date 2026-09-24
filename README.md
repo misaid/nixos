@@ -29,18 +29,27 @@ nix-shell -p git --run "sudo git clone -b systemd-boot https://github.com/misaid
 
 # 3. Generate this machine's hardware config. It is gitignored on purpose:
 #    disk UUIDs differ per install and a stale copy will not boot.
+#    NOTE: bare `sudo ... > /etc/...` fails (the redirect isn't privileged).
+#    Run it under `sudo -i`, or pipe through sudo tee:
 sudo nixos-generate-config --show-hardware-config \
-  > /etc/nixos/hosts/<name>/hardware-configuration.nix
+  | sudo tee /etc/nixos/hosts/<name>/hardware-configuration.nix > /dev/null
 # (or: sudo cp /etc/nixos.bak/hardware-configuration.nix /etc/nixos/hosts/<name>/)
 
 # 4. Sanity check: the file from step 3 must contain a fileSystems."/boot"
 #    entry (vfat ESP). If not, reinstall with UEFI enabled.
 
-# 5. Build and switch. <name> matches a hosts/<name>/ directory
-#    (today: vmware for the VMware VM, nixos for the physical box).
-sudo nixos-rebuild switch --flake /etc/nixos#<name>
+# 5. Stage the hardware config so the flake can see it. Flakes only evaluate
+#    git-tracked files, so this force-add is REQUIRED — but never commit the
+#    file (that would publish your disk UUIDs). Like clone, git itself comes
+#    via nix-shell until the first rebuild installs it system-wide.
+nix-shell -p git --run 'sudo env PATH="$PATH" git -C /etc/nixos add -f hosts/<name>/hardware-configuration.nix'
 
-# 6. Set the login password (user a has none until you do).
+# 6. Build and switch. <name> matches a hosts/<name>/ directory
+#    (today: vmware for the VMware VM, nixos for the physical box).
+#    Still wrapped: this first build runs before git exists on the system.
+nix-shell -p git --run "sudo nixos-rebuild switch --flake /etc/nixos#<name>"
+
+# 7. Set the login password (user a has none until you do).
 sudo passwd a
 ```
 
@@ -102,8 +111,6 @@ sudo nixos-rebuild switch --rollback
   must match the machine it's on.
 - **Login loop / no password:** run `sudo passwd a`.
 - **Flake input errors after months away:** `nix flake update`, then rebuild.
-- **`hardware-configuration.nix` invisible to the flake:** it's gitignored
-  by design, and flakes only see git-tracked files. After generating it,
-  stage it without committing:
-  `git add -f hosts/<name>/hardware-configuration.nix`
-  (committing would publish your disk UUIDs).
+- **`hardware-configuration.nix` invisible to the flake:** covered by
+  install step 5 (`git add -f`, never commit). If a rebuild ever complains
+  the file "is not tracked by Git", re-run that step.
