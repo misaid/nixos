@@ -46,6 +46,8 @@
 
   # Login manager: SilentSDDM (custom video background) + GNOME.
   # SDDM is only the session picker — GNOME handles screen locking.
+  # Upstream removed the "lana" preset, so we use "rei" (identical layout,
+  # lavender accents) with your custom video/placeholder injected.
   # Videos live in ./assets (vendored from your Arch setup) and are
   # injected via backgrounds + settings so filenames always line up.
   programs.silentSDDM =
@@ -59,7 +61,7 @@
     in
     {
       enable = true;
-      theme = "lana";
+      theme = "rei";
       backgrounds = {
         inherit lanaVideo lanaPlaceholder;
       };
