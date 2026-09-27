@@ -30,6 +30,9 @@
 
     shellAliases = {
       fzc = "fzf | wl-copy";
+      cfetch = "fastfetch -c paleofetch -l ~/.config/background --logo-height 20";
+      nc = "nordvpn connect";
+      nd = "nordvpn disconnect";
       sdn = "shutdown now";
       open = "xdg-open";
       clock = "tty-clock -c -s -t -C 4";
@@ -37,15 +40,15 @@
       show = "kitty +kitten icat";
       srn = "sudo reboot now";
       vi = "nvim";
+      sz = "source ~/.zshrc";
       fu = "flatpak upgrade";
-      fix_bluetooth = "~/Scripts/fix_bt_1.sh";
+      setdarkmode = ''while [ 1 -eq 1 ]; do echo "Press 1 for light theme, 2 for dark theme and hit enter"; read userInput; userInput=$(echo "$userInput" | xargs); if [ "$userInput" -eq "1" ]; then theme="Adwaita"; elif [ "$userInput" -eq "2" ]; then theme="Adwaita-dark"; else clear; echo "Invalid input, try again"; continue; fi; sudo flatpak override --env=GTK_THEME=$theme; sudo flatpak override --env=QT_STYLE_OVERRIDE=$theme; clear; echo "Operation Complete"; done;'';
       flatsearch = "flatpak list | grep";
       asearch = "alias | grep";
-      ocon = "~/Scripts/ocon.zsh";
+      editalias = "nvim ~/.zsh_aliases";
+      editz = "nvim ~/.zshrc";
       leet = "nvim leetcode.nvim";
       ncspot = "flatpak run io.github.hrkfdn.ncspot/x86_64/stable";
-      srtw = "~/Scripts/reboot-to-windows.zsh";
-      cherish = "~/Projects/learnrust/cherish/target/debug/cherish";
     };
 
     # Only the p10k *user config* is sourced here — the theme itself loads
@@ -72,6 +75,10 @@
 
       export PATH="$HOME/.local/bin:$HOME/.cargo/bin:$PATH"
       export PATH="$ANDROID_HOME/emulator:$ANDROID_HOME/platform-tools:$ANDROID_HOME/cmdline-tools/latest/bin:$PATH"
+
+      copyout() {
+        cat "$1" | wl-copy
+      }
     '';
   };
 
