@@ -1,176 +1,49 @@
-# Edit this configuration file to define what should be installed on
-# your system.  Help is available in the configuration.nix(5) man page
-# and in the NixOS manual (accessible by running ‘nixos-help’).
-
-{
-  config,
-  pkgs,
-  inputs,
-  ...
-}:
+# nixos host: physical machine (RTX 2070 + Ryzen 5 3600).
+# Shared base lives in ../common.
+{ config, pkgs, lib, inputs, username, ... }:
 
 {
   imports = [
     # Include the results of the hardware scan.
     ./hardware-configuration.nix
-    inputs.home-manager.nixosModules.default
-    ./modules/zsh.nix
-    # ./modules/nvf-configuration.nix
+    ../common
   ];
-  # Bootloader.
-  boot.loader.grub.enable = true;
-  boot.loader.grub.device = "/dev/sda";
-  boot.loader.grub.useOSProber = true;
-
-  networking.hostName = "nixos"; # Define your hostname.
-  # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
-  nix.settings.experimental-features = [
-    "nix-command"
-    "flakes"
-  ];
-
-  # Configure network proxy if necessary
-  # networking.proxy.default = "http://user:password@proxy:port/";
-  # networking.proxy.noProxy = "127.0.0.1,localhost,internal.domain";
-
-  # Enable networking
-  networking.networkmanager.enable = true;
-
-  # Set your time zone.
-  time.timeZone = "America/Edmonton";
-
-  # Select internationalisation properties.
-  i18n.defaultLocale = "en_CA.UTF-8";
-
-  # Enable the X11 windowing system.
-  services.xserver.enable = true;
-
-  virtualisation.vmware.guest.enable = true;
-  # Enable the GNOME Desktop Environment.
-  services.displayManager.gdm.enable = true;
-  services.desktopManager.gnome.enable = true;
-
-  # Configure keymap in X11
-  services.xserver.xkb = {
-    layout = "us";
-    variant = "";
-  };
-
-  # Enable CUPS to print documents.
-  services.printing.enable = true;
-
-  # Enable sound with pipewire.
-  services.pulseaudio.enable = false;
-  security.rtkit.enable = true;
-  services.pipewire = {
-    enable = true;
-    alsa.enable = true;
-    alsa.support32Bit = true;
-    pulse.enable = true;
-    # If you want to use JACK applications, uncomment this
-    #jack.enable = true;
-
-    # use the example session manager (no others are packaged yet so this is enabled by default,
-    # no need to redefine it in your config for now)
-    #media-session.enable = true;
-  };
-
-  # Enable touchpad support (enabled default in most desktopManager).
-  # services.xserver.libinput.enable = true;
-  # Enable Flatpak
-  services.flatpak.enable = true;
-
-  # Define a user account. Don't forget to set a password with ‘passwd’.
-  users.users.a = {
-    isNormalUser = true;
-    description = "a";
-    shell = pkgs.zsh;
-    extraGroups = [
-      "networkmanager"
-      "wheel"
-    ];
-    packages = with pkgs; [
-      vim
-      # neovim
-      firefox
-      #  thunderbird
-    ];
-  };
 
   home-manager = {
-    extraSpecialArgs = { inherit inputs; };
+    extraSpecialArgs = { inherit inputs username; };
     useGlobalPkgs = true;
     useUserPackages = true;
-
     users = {
-      "a" = import ./home.nix;
+      "${username}" = import ./home.nix;
     };
   };
 
-  # Install firefox.
-  programs.firefox.enable = true;
-
-  # Enable Oh-my-zsh
-  users.defaultUserShell = pkgs.zsh;
-  # system.userActivationScripts.zshrc = "touch .zshrc"; # to avoid being prompted to generate the config for first time
-  environment.shells = [ pkgs.zsh ]; # https://wiki.nixos.org/wiki/Zsh#GDM_does_not_show_user_when_zsh_is_the_default_shell
-  environment.loginShellInit = ''
-    # equivalent to .profile
-    # https://search.nixos.org/options?show=environment.loginShellInit
-  '';
-
-  programs.hyprland = {
-    enable = true;
-    xwayland.enable = true;
+  # NVIDIA RTX 2070 (Turing): proprietary driver with modesetting for
+  # Wayland/Hyprland. open = false is the battle-tested pick here;
+  # Turing also supports the open modules (open = true) if you prefer.
+  services.xserver.videoDrivers = [ "nvidia" ];
+  hardware.graphics.enable32Bit = true; # Steam/Proton + 32-bit games
+  hardware.nvidia = {
+    modesetting.enable = true;
+    powerManagement.enable = true;
+    powerManagement.finegrained = false; # laptops only, must stay off on desktop
+    open = false;
+    nvidiaSettings = true;
   };
+  # Preserve VRAM across suspend so resume doesn't lose the display.
+  boot.kernelParams = [ "nvidia.NVreg_PreserveVideoMemoryAllocations=1" ];
+
+  # Extra Wayland env for NVIDIA (base Wayland vars live in ../common).
   environment.sessionVariables = {
-    WLR_NO_HARDWARE_CURSORS = "1";
-    NIXOS_OZONE_WL = "1";
+    LIBVA_DRIVER_NAME = "nvidia";
+    __GLX_VENDOR_LIBRARY_NAME = "nvidia";
   };
 
-  hardware.graphics.enable = true;
+  # Ryzen 5 3600 microcode updates.
+  hardware.cpu.amd.updateMicrocode = lib.mkDefault config.hardware.enableRedistributableFirmware;
 
-  # Allow unfree packages
-  nixpkgs.config.allowUnfree = true;
-
-  # List packages installed in system profile. To search, run:
-  # $ nix search wget
-  environment.systemPackages = with pkgs; [
-    git
-    stow
-    vim
-    wget
-    kitty
-    sl
-    gnome-tweaks
-    uwsm
-    zsh-powerlevel10k
-    meslo-lgs-nf
-    tmuxPlugins.vim-tmux-navigator
-    tmuxPlugins.resurrect
-    tmuxPlugins.continuum
-    foot
-    gcc
-    fzf
-    python3
-    pipenv
-    tmux
-    zoxide
-    tree-sitter
-  ];
-
-  programs.nvf = {
-    enable = true;
-    # Your settings need to go into the settings attribute set
-    # most settings are documented in the appendix
-    settings = {
-      vim.viAlias = false;
-      vim.vimAlias = true;
-      vim.lsp = {
-        enable = true;
-      };
-    };
-  };
+  # Frame-rate friendly gaming helper (run games with gamemoderun).
+  programs.gamemode.enable = true;
 
   # Some programs need SUID wrappers, can be configured further or are
   # started in user sessions.
@@ -190,13 +63,4 @@
   # networking.firewall.allowedUDPPorts = [ ... ];
   # Or disable the firewall altogether.
   # networking.firewall.enable = false;
-
-  # This value determines the NixOS release from which the default
-  # settings for stateful data, like file locations and database versions
-  # on your system were taken. It‘s perfectly fine and recommended to leave
-  # this value at the release version of the first install of this system.
-  # Before changing this value read the documentation for this option
-  # (e.g. man configuration.nix or on https://nixos.org/nixos/options.html).
-  system.stateVersion = "25.11"; # Did you read the comment?
-
 }

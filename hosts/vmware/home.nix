@@ -42,9 +42,42 @@
   ];
 
   # --------------------------------------------------
+  # Hyprland env override (vmware VM only). The stowed environment.lua
+  # hardcodes the NVIDIA backend (GBM_BACKEND=nvidia-drm etc.) for the
+  # physical box, which crashes Hyprland on the VM's virtual GPU. This
+  # replaces just that file (force swaps the stow symlink) with the same
+  # generic vars minus NVIDIA, plus AQ_DRM_DISABLE_ATOMIC=1 — atomic
+  # modesetting hangs/dies on vmwgfx (log stops at "slot N crtc N
+  # unassigned" with no error). Monitors are untouched.
+  # --------------------------------------------------
+  xdg.configFile."hypr/environment.lua" = {
+    force = true;
+    text = ''
+      local environment = {
+        QT_QPA_PLATFORMTHEME = "qt6ct",
+        XDG_CURRENT_DESKTOP = "Hyprland",
+        XCURSOR_SIZE = "24",
+        HYPRCURSOR_SIZE = "24",
+        XDG_SESSION_TYPE = "wayland",
+        ELECTRON_OZONE_PLATFORM_HINT = "wayland",
+        ELECTRON_DISABLE_GPU = "true",
+        ELECTRON_ENABLE_OZONE = "true",
+        AQ_DRM_DISABLE_ATOMIC = "1",
+      }
+
+      for name, value in pairs(environment) do
+        hl.env(name, value)
+      end
+    '';
+  };
+
+  # --------------------------------------------------
   # Let Home Manager manage itself
   # --------------------------------------------------
   programs.home-manager.enable = true;
+  # --------------------------------------------------
+  # Zsh (clean + Nix-safe Powerlevel10k)
+  # --------------------------------------------------
 
   # --------------------------------------------------
   # Environment variables (optional)
