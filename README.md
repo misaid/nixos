@@ -166,3 +166,8 @@ marketplace is browse-only under this setup.
 - **`hardware-configuration.nix` invisible to the flake:** covered by
   install step 5 (`git add -f`, never commit). If a rebuild ever complains
   the file "is not tracked by Git", re-run that step.
+
+## Shared session board
+
+Collaborative whiteboard for connecting sessions:
+https://excalidraw.com/#room=17c363715b07be4dc799,y83fAft7Rk45EXAPrSzweg
