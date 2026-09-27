@@ -7,6 +7,8 @@
 #
 # Already set up and just want the dotfiles re-synced (no rebuild)?
 #   bash /tmp/install.sh --sync-only [username]   (no sudo needed)
+# Just want the Flatpaks (no rebuild, no dotfiles)?
+#   bash /tmp/install.sh --apps-only [username]   (no sudo needed)
 # NOTE: the branch in the URL above must match the branch this file is on.
 set -euo pipefail
 
@@ -18,11 +20,14 @@ DOTFILES_REPO="https://github.com/misaid/dotfiles"
 STOW_PKGS="alacritty btop caelestia cava fastfetch ghostty hypr hyprpanel jrnl kitty lazygit mpv neofetch qBittorrent tmux vlc wallpapers zathura zed"
 
 # --sync-only / --dotfiles-only: skip the NixOS install, just (re)stow dotfiles.
+# --apps-only: skip the NixOS install, just (re)install the Flatpaks below.
 SYNC_ONLY=0
+APPS_ONLY=0
 ARGS=()
 for a in "$@"; do
   case "$a" in
     --sync-only|--dotfiles-only) SYNC_ONLY=1 ;;
+    --apps-only) APPS_ONLY=1 ;;
     *) ARGS+=("$a") ;;
   esac
 done
@@ -47,6 +52,53 @@ sync_dotfiles() {
   as_user "$user" sh -c "stow -R -d '$user_home/dotfiles' -t '$user_home' $STOW_PKGS"
 }
 
+# Flatpaks (system-wide, mirrors the Arch daily driver).
+# Idempotent: re-runs skip what's installed. This is big (~several GB).
+# NOTE: flatpak never runs as root — these go in as the login user (polkit
+# prompts for auth on the system install, same as doing it by hand).
+FLATPAKS=(
+  app.zen_browser.zen
+  com.belmoussaoui.Decoder
+  com.discordapp.Discord
+  com.github.johnfactotum.Foliate
+  com.github.tchx84.Flatseal
+  com.github.wwmm.easyeffects
+  com.heroicgameslauncher.hgl
+  com.jeffser.Alpaca
+  com.obsproject.Studio
+  com.rafaelmardojai.Blanket
+  com.stremio.Stremio
+  com.usebottles.bottles
+  dev.vencord.Vesktop
+  io.github.hrkfdn.ncspot
+  io.missioncenter.MissionCenter
+  it.mijorus.gearlever
+  md.obsidian.Obsidian
+  org.equicord.equibop
+  org.gnome.Calculator
+  org.gnome.Loupe
+  org.gnome.Snapshot
+  org.gnome.SoundRecorder
+  org.gnome.TextEditor
+  org.gnome.Weather
+  org.gnome.gitlab.cheywood.Buffer
+  org.kde.okular
+  org.kde.yakuake
+  org.prismlauncher.PrismLauncher
+  org.telegram.desktop
+  org.vinegarhq.Sober
+  page.codeberg.libre_menu_editor.LibreMenuEditor
+  us.zoom.Zoom
+)
+
+install_flatpaks() {
+  local user="$1"
+  # shellcheck disable=SC2068
+  as_user "$user" flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
+  # shellcheck disable=SC2068
+  as_user "$user" flatpak install -y --system flathub ${FLATPAKS[@]}
+}
+
 # Sync-only mode: no root, no hostname, no rebuild — dotfiles only.
 if [ "$SYNC_ONLY" = 1 ]; then
   USERNAME="${1:-${SUDO_USER:-${USER:-nixmo}}}"
@@ -59,7 +111,15 @@ if [ "$SYNC_ONLY" = 1 ]; then
   exit 0
 fi
 
-HOST="${1:?usage: install.sh <hostname> [username] [--sync-only]  (e.g. install.sh vmware)}"
+# Apps-only mode: no root, no hostname, no rebuild — Flatpaks only.
+if [ "$APPS_ONLY" = 1 ]; then
+  USERNAME="${1:-${SUDO_USER:-${USER:-nixmo}}}"
+  install_flatpaks "$USERNAME"
+  echo "Flatpaks installed for $USERNAME."
+  exit 0
+fi
+
+HOST="${1:?usage: install.sh <hostname> [username] [--sync-only|--apps-only]  (e.g. install.sh vmware)}"
 # Must match the username in the flake's hosts table for this host.
 USERNAME="${2:-nixmo}"
 
@@ -111,6 +171,10 @@ nix-shell -p git --run "nixos-rebuild switch --flake $DEST#$HOST"
 #    the repo is fair game. Binaries backing these configs live in
 #    home.packages.
 sync_dotfiles "$USERNAME" "/home/$USERNAME"
+
+# 8b. Flatpaks (system-wide, mirrors the Arch daily driver). Needs the
+#    rebuild above (flatpak binary + services come from the flake).
+install_flatpaks "$USERNAME"
 
 # 9. Login password — only if the user has none yet. A password set in the
 #    graphical installer survives the rebuild (mutableUsers keeps /etc/shadow),
