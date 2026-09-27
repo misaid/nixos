@@ -127,6 +127,21 @@ Notes:
   no rebuild, no sudo needed):
   `bash /tmp/install.sh --sync-only` (same `STOW_PKGS`, same exclusions).
 
+## Flatpaks
+
+`install.sh` step 8b installs 32 system Flatpaks from Flathub, mirroring
+the Arch daily driver (Zen, Discord, EasyEffects, Obsidian, Bottles,
+Stremio, GNOME/KDE apps, … — full list is the `FLATPAKS` array in
+`install.sh`). Runs as the login user, never as root. Idempotent:
+re-runs skip what's already installed.
+
+Already installed and just want the apps (no rebuild, no dotfiles,
+no sudo needed):
+
+```bash
+bash /tmp/install.sh --apps-only [username]
+```
+
 ## Spotify (spicetify)
 
 Themed declaratively via the `spicetify-nix` flake input, configured in
