@@ -69,8 +69,22 @@
 
   programs.hyprland = {
     enable = true;
+    # REQUIRED: autostart.lua uses `uwsm app -- ...` everywhere, which only
+    # works inside a uwsm-managed session. You must then pick
+    # "Hyprland (uwsm-managed)" (hyprland-uwsm.desktop) in SDDM —
+    # plain "Hyprland" runs without the uwsm scope and all autostart
+    # entries + caelestia break. Do NOT also set
+    # programs.uwsm.waylandCompositors — withUWSM already handles it.
+    withUWSM = true;
     xwayland.enable = true;
   };
+  # Portal for Hyprland is pulled in by the module above; gtk portal is
+  # still needed for file pickers / flatpak.
+  xdg.portal = {
+    enable = true;
+    extraPortals = with pkgs; [ xdg-desktop-portal-gtk ];
+  };
+  security.polkit.enable = true;
   environment.sessionVariables = {
     WLR_NO_HARDWARE_CURSORS = "1";
     NIXOS_OZONE_WL = "1";
@@ -88,7 +102,18 @@
     kitty
     sl
     gnome-tweaks
-    uwsm
+    # NOTE: no `uwsm` here — programs.hyprland.withUWSM above provides the
+    # uwsm integration (PAM/systemd entries). A raw package install does not.
+    # Runtime deps backing autostart.lua / bind.lua (nm-applet, hypridle,
+    # wl-paste, cliphist, clipse, polkit agent). Without these the
+    # compositor starts but the session looks dead.
+    hypridle
+    hyprlock
+    hyprpolkitagent
+    networkmanagerapplet
+    wl-clipboard
+    cliphist
+    clipse
     zsh-powerlevel10k
     meslo-lgs-nf
     tmuxPlugins.vim-tmux-navigator
