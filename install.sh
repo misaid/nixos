@@ -114,6 +114,10 @@ fi
 # Apps-only mode: no root, no hostname, no rebuild — Flatpaks only.
 if [ "$APPS_ONLY" = 1 ]; then
   USERNAME="${1:-${SUDO_USER:-${USER:-nixmo}}}"
+  command -v flatpak > /dev/null 2>&1 || {
+    echo "ERROR: flatpak not found — run the full install (rebuild) first." >&2
+    exit 1
+  }
   install_flatpaks "$USERNAME"
   echo "Flatpaks installed for $USERNAME."
   exit 0

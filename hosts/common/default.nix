@@ -92,6 +92,9 @@
 
   hardware.graphics.enable = true;
 
+  # Fonts (registered with fontconfig — systemPackages would not register).
+  fonts.packages = with pkgs; [ meslo-lgs-nf ];
+
   # List packages installed in system profile. To search, run:
   # $ nix search wget
   environment.systemPackages = with pkgs; [
@@ -115,10 +118,10 @@
     cliphist
     clipse
     zsh-powerlevel10k
-    meslo-lgs-nf
-    tmuxPlugins.vim-tmux-navigator
-    tmuxPlugins.resurrect
-    tmuxPlugins.continuum
+    # NOTE: tmuxPlugins.* don't belong here — they're tmux plugin
+    # derivations, inert as system packages. To manage them declaratively,
+    # enable programs.tmux and list them under programs.tmux.plugins
+    # (kept out for now: tmux config is stowed from dotfiles).
     foot
     gcc
     fzf
@@ -146,7 +149,7 @@
     ];
     packages = with pkgs; [
       vim
-      firefox
+      # NOTE: no firefox here — programs.firefox above already installs it.
     ];
   };
 
